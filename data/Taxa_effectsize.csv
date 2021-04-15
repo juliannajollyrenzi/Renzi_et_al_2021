@@ -1,0 +1,46 @@
+﻿Publication,Corallivore_Weffect,Corallivore_family,Treatment_simple,Treat_response,Treat_n,Control_response,Control_n,Manip_notes,Disease_specific,Disease_general
+Sussman et al. 2003,Hermodice carunculata,Amphinomidae,Corallivore_inoculation,6,6,0,10,Confusing because also tested whether an uninfected worm could transfer disease and that happened in 1 of 6 (12 really..) treatments… So not sure how to pull which numbers,Bleaching,Bleaching
+Sussman et al. 2003,Hermodice carunculata,Amphinomidae,Corallivore_noManip,1,5,0,10,No intentional infection,Bleaching,Bleaching
+Sussman et al. 2003,Hermodice carunculata,Amphinomidae,V.mediterranei_infected,0,2,0,10,,Bleaching,Bleaching
+Williams and Miller 2005,Coralliophila abbreviata,Muricidae,Corallivore_inoculation,7,13,0,10,"Since the ""control"" they use in Table 2 is actually snails that fed on healthy corals, these ""controls"" are the nubbins that were outplanted but without snails (Exp III: Indirect contact)",White pox/Acroporid serratiosis (APS)--probably,White
+Williams and Miller 2005,Coralliophila abbreviata,Muricidae,Corallivore_noManip,0,6,0,10,Fed healthy coral,White pox/Acroporid serratiosis (APS)--probably,White
+Dalton and Godwin 2006,Phestilla sp.,Trinchesiidae,Corallivore_inoculation,4,6,NA,NA,No control--picked corallivores that had been feeding on diseased corals,Australian subtropical white syndrome (noted in Dalton et al. 2010),White
+Aeby and Santavy 2006,Wounding,Wounding,Wounding,12,12,0,12,"Response was P. corallyticum penetrating into coral tissue (""Invaded""). See Table 1",Australian subtropical white syndrome (noted in Dalton et al. 2010),BBD
+Aeby and Santavy 2006,Chaetodon capistratus ,Chaetodontidae,Corallivore_noManip,7,8,0,8,Caging didn't have an effect (6 of 8 caged fragments were infected),Black-band disease,BBD
+Aeby and Santavy 2006,Chaetodon capistratus ,Chaetodontidae,Corallivore_nobite,6,8,0,8,When the nubbins were caged (fecal transmiaaion),Black-band disease,BBD
+Gignoux-Wolfsohn et al. 2012,Wounding,Wounding,Wounding,1,9,0,10,"IMPORTANT: Here I'm saying the ""control"" are the corals that had snails with no bites--closest thing to a control but not sure exaclty what the balance is here",White band disease,White
+Gignoux-Wolfsohn et al. 2012,Wounding_inoculation,Wounding,Wounding_inoculation,6,15,0,15,,White band disease,White
+Gignoux-Wolfsohn et al. 2012,Coralliophila abbreviata,Muricidae,Corallivore_nobite,0,2,NA,NA,This is for where corals had snails but they didn't bite.. But I used these figures for control so probably not valid here also?,White band disease,White
+Gignoux-Wolfsohn et al. 2012,Coralliophila abbreviata,Muricidae,Corallivore_noManip,7,13,0,10,Fed healthy coral--have decided to **LUMP THIS WITH STARVED**! As long as they weren't intentionally fed diseased corals,White band disease,White
+Gignoux-Wolfsohn et al. 2012,Coralliophila abbreviata,Muricidae,Corallivore_inoculation,2,6,0,10,,White band disease,White
+Gignoux-Wolfsohn et al. 2012,Coralliophila caribea,Muricidae,Corallivore_nobite,0,8,NA,NA,,White band disease,White
+Gignoux-Wolfsohn et al. 2012,Coralliophila caribea,Muricidae,Corallivore_noManip,0,3,0,10,,White band disease,White
+Gignoux-Wolfsohn et al. 2012,Coralliophila caribea,Muricidae,Corallivore_inoculation,0,4,0,10,,White band disease,White
+Sutherland et al. 2011,Coralliophila abbreviata,Muricidae,Isolate_from_corallivore,1,3,0,3,,White pox/Acroporid serratiosis (APS),White
+Nicolet et al. 2013,Drupella spp.,Muricidae,Corallivore_inoculation,5,12,0,4,"Not fed exactly, but collected from diseased colonies which I think counts",Brown band disease,BrB
+Nicolet et al. 2013,Chromis viridis,Pomacentridae,Corallivore_inoculation,0,6,0,6,,Brown band disease,
+Nicolet et al. 2013,Pomacentrus moluccensis,Pomacentridae,Corallivore_inoculation,0,6,0,6,,Brown band disease,BrB
+Nicolet et al. 2013,Wounding,Wounding,Wounding,1,4,0,4,,Brown band disease,BrB
+Nicolet et al. 2013,Chaetodon aureofasciatus,Chaetodontidae,Corallivore_inoculation,0,6,0,6,,Brown band disease,BrB
+Clemens and Brandt 2015,Coralliophila abbreviata,Muricidae,Corallivore_inoculation,1,9,0,6,"See Table 1. Control is actually different than filtered (filtered is filtering diseased water, but they say that ""disease signs… were never transmitted in any control treatment"". Technically for this they used controls of a corallivore fed healthy coral but I'm going to break it up and use the controls from the other experiment (waterborne healthy coral) as controls for these and treatments as corallivore application ",White plague,White
+Clemens and Brandt 2015,Coralliophila abbreviata,Muricidae,Corallivore_noManip,0,3,0,6,,White plague,White
+Clemens and Brandt 2015,Hermodice carunculata,Amphinomidae,Corallivore_inoculation,0,9,0,6,,White plague,White
+Clemens and Brandt 2015,Hermodice carunculata,Amphinomidae,Corallivore_noManip,0,3,0,6,,White plague,White
+Pratte and Richardson 2016,Cryptochiridae,Cryptochiridae,Corallivore_inoculation,3,3,0,2,"I think they kept the crab with the infected fragment, although they don't say they fed it that explicity",White plague-like disease,White
+Pratte and Richardson 2016,Cryptochiridae,Cryptochiridae,Corallivore_nobite,3,3,0,2,,White plague-like disease,White
+Nicolet et al. 2018b,Drupella spp.,Muricidae,Corallivore_inoculation,3,8,0,8,"Didn't include the ""12-hr delay"" or the ""24-hr delay"" treatments",Brown band disease,BrB
+Nicolet et al. 2018b,Wounding,Wounding,Wounding,0,8,0,8,,Brown band disease,BrB
+Nicolet et al. 2018b,Wounding,Wounding,Wounding,0,6,0,6,,Black-band disease,BBD
+Nicolet et al. 2018b,Drupella spp.,Muricidae,Corallivore_inoculation,0,6,0,6,,Black-band disease,BBD
+Nicolet et al. 2018b,Chaetodon plebius,Chaetodontidae,Corallivore_nobite,0,10,0,5,Double replicated the fish treatments vs. control,Brown band disease,BrB
+Nicolet et al. 2018b,Chaetodon plebius,Chaetodontidae,Corallivore_nobite,0,14,0,7,,Black-band disease,BBD
+Nicolet et al. 2018b,Chaetodon plebius,Chaetodontidae,Corallivore_inoculation,0,10,0,5,,Brown band disease,BrB
+Nicolet et al. 2018b,Chaetodon plebius,Chaetodontidae,Corallivore_inoculation,0,14,0,7,,Black-band disease,BBD
+Page and Willis 2008,Wounding,Wounding,Wounding,0,90,0,90,"Although ciliates colonized wounds, they didn't persist/turn into tissue loss so I didn’t count it",Skeletal eroding band,SEB
+Nugues and Bak 2009,Acanthaster planci,Acanthasteridae,Corallivore_noManip,5,8,0,4,,Brown band disease,BrB
+Jordán-Garza and Jordán-Dahlgren 2011,Wounding,Wounding,Wounding,0,60,0,60,,Caribbean yellow-band syndrome,CYBS
+Katz et al. 2014,Acanthaster planci,Acanthasteridae,Corallivore_noManip,0,0,0,9,Said didn't see any distinctive BrB ciliates in COTS predation + no ciliates,,
+Katz et al. 2014,Acanthaster planci,Acanthasteridae,Corallivore_inoculation,9,9,0,9,Didn't include wounding portion because (1) mimicked storm damage/fragmentation and (2) didn't report # of fragments that sucumbed ,Brown band disease,BrB
+Miller et al. 2014,Hermodice carunculata,Amphinomidae,Corallivore_noManip,17,81,10,469,,"Unknown--""tissue loss associated with disease--described in Miller et al. 2014)",White
+Randall et al. 2016,Wounding_inoculation,Wounding,Wounding_inoculation,0,3,0,3,"Wasn’t ""inoculation"" exactly, but pushed a diseased coral up in a wounded one for 13 hours ""to facilitate potential pathogen transmission"" which I think is sufficient",Dark spot syndrome,DSS
+Shaver et al. 2017,Coralliophila abbreviata,Muricidae,Corallivore_noManip,6,20,0,20,"Said they observed white symptoms on all corals that suffered full mortality so those are the ones we'll count as diseased. Results were confusing, but I think the critical part is that n = 11 snail addition (40 total) corals died, which included n = 5 from snail + nutrient and n = 6 from snail only",Unknown (rapid tissue loss syndrome?),White

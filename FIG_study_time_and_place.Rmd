@@ -1,0 +1,199 @@
+---
+title: "Spatio-temporal study distribution"
+author: "Julianna Renzi"
+date: "4/15/2021"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    theme: lumen
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load required packages
+require(tidyverse) # data manipulation
+require(here) # for relative paths
+require(RColorBrewer) # for colors
+require(patchwork) # combining figures
+require(sf) # working with georeferenced objects
+require(rnaturalearth) # map of the world
+require(ggsn) # scale bar
+```
+
+# Make a plot for the number of studies over time
+
+First bring in the correct dataset that has a unique line per study and a column noting the type of experiment (observational, experimental, or both)
+
+```{r}
+# bring in the data
+time <- read_csv(here("data", "Corallivore_year_exptype.csv"))
+```
+
+Summarize the number of studies per year
+
+```{r}
+# get the count of publications per year
+time_sum <- time %>% 
+  group_by(Year, Exp_type) %>% 
+  summarize(Publications = n()) 
+
+# get the duration of the graph we want (from the first study to the last)
+min_yr <- 1976
+max_yr <- 2020
+
+# create a dataframe of all possible values to join so that every year is accounted for (year=0 if there are no publications)
+all_years <- data.frame(Year = c(seq(min_yr, max_yr, by = 1),
+                                seq(min_yr, max_yr, by = 1),
+                                seq(min_yr, max_yr, by = 1)),
+                        Exp_type = c(rep("Experimental", times = max_yr-min_yr+1),
+                                     rep("Observational", times = max_yr-min_yr+1),
+                                     rep("Both", times = max_yr-min_yr+1))) 
+
+# join the dataframes so there's a line for every year
+time_full <- all_years %>% 
+  full_join(time_sum, by = c("Year", "Exp_type")) %>% # join the two dataframes so there's a line for every year
+  mutate(Publications = replace_na(Publications, 0)) # replace the NA's for 0 in the years where nothing was published
+```
+
+Then make the plot
+
+```{r}
+time_plt <- time_full %>% 
+  ggplot(aes(x = Year, y = Publications, fill = fct_reorder(Exp_type, desc(Exp_type)))) + # fct_reorder() so both is the last in the legend (makes the most sense)
+  geom_bar(stat = "identity") + # identity means to use the values in the cells for plotting
+  ylab("Number of studies") +
+  geom_hline(yintercept = 0) + # create an x-axis that is distinct
+  theme_minimal()  +
+  scale_fill_manual(name = "", # no legend title 
+                    values = rev(brewer.pal(n = 3, name = "YlOrBr"))) +
+  scale_x_continuous(breaks = seq(min_yr, max_yr, by = 2)) + # get higher resolution ticks on the x-axis
+  theme(text = element_text(size = 15), legend.position = "top",
+        axis.text.x = element_text(angle = 90, hjust = 1), # rotate axis labels
+        axis.title.x = element_text(vjust = -1), # add padding fo titles (also need to adjust the margins)
+        axis.title.y = element_text(vjust = 3),
+        plot.margin = unit(c(5.5, 5.5, 10, 10), "points")) 
+```
+
+# Make a map of where studies were conducted
+
+First bring in polygons of the world from `rnaturalearth` using `ne_countries` and polygons of marine ecoregions from Spalding et al. 2007 (downloaded from: https://geospatial.tnc.org/datasets/ed2be4cf8b7a451f84fd093c2e7660e3_0)
+
+```{r}
+# bring in world shape
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# bring in shapefiles from Spalding et al. on marine bioregions
+meow_ecos <- read_sf(here("data", "MEOW-TNC"), layer = "meow_ecos")
+
+# check that projections match
+st_crs(world) == st_crs(meow_ecos) # WGS 84
+```
+
+Then bring in the csv that has a line for each ecoregion in each study with the associated publication name
+
+```{r}
+# bring in the csv
+ecoregions <- read_csv(here("data", "Corallivore_spatial.csv"))
+
+# get count of number of studies per ecoregion
+ecoreg_sum <- ecoregions %>% 
+  group_by(Ecoregion) %>% 
+  summarize(Num_studies = n()) %>% 
+  mutate(ECOREGION = Ecoregion) # make name match that in meow_ecos
+
+# join to the Spalding et al. dataset for plotting
+meow_pub <- meow_ecos %>% 
+  left_join(ecoreg_sum, by = "ECOREGION")
+
+```
+
+Then plot the results
+
+```{r}
+
+ecoreg_plt <- ggplot() +
+  # color the ecoregions based on the number of studies they have
+  geom_sf(data = meow_pub, aes(fill = Num_studies), color = NA, size = 0) +
+  geom_sf(data = world, fill = "black", color = "black", size = 0.05) + # background color for continents (black)
+  theme_bw() +
+  # format legend and color scheme using RColorBrewer
+  scale_fill_gradient(name = "Number of studies", 
+                      low = brewer.pal(n = 3, name = "YlOrRd")[1], 
+                      high = brewer.pal(n = 3, name = "YlOrRd")[3], 
+                      na.value = NA, breaks = seq(1, 14, by = 2)) +
+  theme(text = element_text(size = 15)) + # increase text size
+  coord_sf(xlim = c(-180, 180), ylim = c(-45, 45), expand = FALSE) + # crop the view so get a better look
+  theme(panel.grid.major = element_line(colour = 'grey50', size = 0.2, linetype = 3)) + # add grid lines (no scale bar because projection would make one scale bar meaningless over the entire map)
+  north(data = world, location = "bottomleft", scale = 0.1, symbol = 14, anchor = c(x = -180, y = -40)) # add a north arrow
+
+```
+
+# Combine figures to create Figure 1
+
+Use `patchwork` to combine panels
+
+```{r}
+# to save as pdf() run this chunk without hashtags
+# pdf("Figure_1.pdf", width = 15, height = 5)
+time_plt + ecoreg_plt +
+   plot_annotation(tag_levels = list(c("(a)", "(b)")))
+
+# dev.off()
+```
+
+# Get stats on spatial distribution
+
+We quote some statistics of where studies were conducted. This code is how we got those
+
+1. For ecoregions:
+
+```{r}
+# get the total number of studies
+val <- ecoreg_sum %>% 
+  summarize(Total_studies = sum(Num_studies)) %>% 
+  as.numeric()
+
+# get the number of ecoregions that had studies
+ecoreg_num <- ecoreg_sum %>% 
+  summarize(Total_regions = n()) %>% 
+  as.numeric()
+
+# get the percentage of studies per region
+perc_df <- ecoreg_sum %>% 
+  group_by(ECOREGION) %>% 
+  summarize(Percent = Num_studies/val*100,
+            Num_std = Num_studies) %>% 
+  arrange(-Percent)
+```
+
+2. By realm:
+
+```{r}
+# get count per realm
+realm_pub <- meow_pub %>% 
+  select(REALM, Num_studies) %>% 
+  group_by(REALM) %>% 
+  summarize(Num_studies = sum(Num_studies, na.rm = TRUE)) 
+
+realm_nums <- realm_pub %>% 
+  filter(Num_studies != 0) %>% 
+  select(REALM, Num_studies) 
+
+# get total number of regions
+val_r <- realm_nums %>% 
+  summarize(Total_studies = sum(Num_studies)) %>% 
+  as.numeric()
+
+realm_perc <- realm_nums %>% 
+  group_by(REALM) %>% 
+  summarize(Percent = Num_studies/val_r[1]*100,
+            Num_std = Num_studies)
+
+```
+
+
+
