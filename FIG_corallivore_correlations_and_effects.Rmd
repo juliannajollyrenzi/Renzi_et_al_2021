@@ -1,0 +1,219 @@
+---
+title: "Corallivore-disease relationships"
+author: "Julianna Renzi"
+date: "4/15/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+require(tidyverse) # data manipulation
+require(here) # for relative paths
+require(RColorBrewer) # for colors
+require(patchwork) # combining figures
+```
+
+# Correlations between disease and corallivores
+
+Bring in the data that has a unique line for each corallivore-study combination
+
+```{r}
+corallivores <- read_csv(here("data", "Taxa_effects.csv")) %>% 
+  select(-starts_with(match = "X")) # get rid of extra columns read_csv can bring in
+```
+
+Look at which families are correlated with disease
+
+```{r}
+corr_effect <- corallivores %>% 
+  filter(!is.na(Correlation)) %>% 
+  filter(Correlation != "None") %>% # only look at the ones with a correlation
+  filter(Disease_general != "Microbiome") %>% # don't want to use this because it's too general
+  group_by(Corallivore_family, Disease_general) %>% 
+  summarize(N_pos = sum(Correlation == "Positive"),
+            N_neg = sum(Correlation == "Negative")) 
+
+```
+
+Set a color scheme to use throughout
+
+```{r}
+asp_col <- brewer.pal(n = 9, name = "Spectral")[1]
+bbd_col <- brewer.pal(n = 9, name = "Spectral")[2]
+blc_col <- brewer.pal(n = 9, name = "Spectral")[3]
+brb_col <- brewer.pal(n = 9, name = "Spectral")[4]
+cya_col <- brewer.pal(n = 9, name = "Spectral")[5]
+ga_col <- brewer.pal(n = 9, name = "Spectral")[6]
+gen_col <- brewer.pal(n = 9, name = "Spectral")[7]
+seb_col <- brewer.pal(n = 9, name = "Spectral")[8]
+trem_col <- brewer.pal(n = 9, name = "Spectral")[9]
+whi_col <- brewer.pal(n = 11, name = "Spectral")[11]
+
+```
+
+
+## Plot corallivore families that are positively correlated with specific diseases
+
+```{r}
+# positive
+corr_pos_plt <- corr_effect %>% 
+  filter(N_pos != 0) %>% # only studies with a positive relationship found
+  ggplot(aes(x = ordered(Corallivore_family, levels = c("Muricidae", "Pomacentridae", "Amphinomidae", "Chaetodontidae", "Ovulidae", "Xanthidae", "Cryptochiridae", "Scaridae")), 
+             y = N_pos, 
+             fill = Disease_general)) +
+    geom_bar(stat = "identity") +
+    theme_classic() +
+    scale_fill_manual(name = "Disease",
+                        values = c("Aspergillosis" = asp_col, "BBD" = bbd_col, "Bleaching" = blc_col, "Cyanobacterial" = cya_col, "GA" = ga_col, "General" = gen_col, "SEB" = seb_col, "Trematodiasis" = trem_col, "White" = whi_col, "BrB" = brb_col)) +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1), legend.position = "none")  +
+  ggtitle("(a) Positive correlations") +
+  xlab("") +
+  ylab("Number of studies") +
+  ylim(0, 8)
+```
+
+
+## Plot corallivore families that are negatively correlated with specific diseases
+
+```{r}
+# negative
+corr_neg_plt <- corr_effect %>% 
+  filter(N_neg != 0) %>% 
+  ggplot(aes(x = fct_rev(Corallivore_family), 
+             y = N_neg, 
+             fill = Disease_general)) +
+    geom_bar(stat = "identity") +
+    theme_classic() +
+    scale_fill_manual(name = "Disease",
+                        values = c("Aspergillosis" = asp_col, "BBD" = bbd_col, "Bleaching" = blc_col, "Cyanobacterial" = cya_col, "GA" = ga_col, "General" = gen_col, "SEB" = seb_col, "Trematodiasis" = trem_col, "White" = whi_col, "BrB" = brb_col)) +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1), legend.position = "none")  +
+  ggtitle("(b) Negative correlations") +
+  xlab("") +
+  ylab("") +
+  ylim(0, 8)
+```
+
+## Experimental studies showing corallivore-disease relationship
+
+Plot studies that tested whether corallivores increase/decrease/have no effect on disease. Start by summarizing the data
+
+```{r}
+manip_effect <- corallivores %>% 
+  filter(!is.na(Experimental_effect)) %>% # only studies 
+  filter(Disease_general != "Microbiome") %>% # don't want to use this because it's too general
+  group_by(Corallivore_family, Disease_general) %>% 
+  summarize(N_inc = sum(Experimental_effect == "Increased"),
+            N_dec = sum(Experimental_effect == "Decreased"),
+            N_noeff = sum(Experimental_effect == "No effect")) 
+```
+
+Plot by increased/decreased. First by increased:
+
+```{r}
+# increased
+manip_pos_plt <-manip_effect %>% 
+  filter(N_inc != 0) %>% 
+  ggplot(aes(x = ordered(Corallivore_family, 
+                         levels = c("Muricidae", "Amphinomidae", "Acanthasteridae", "Cryptochiridae", "Trinchesiidae", "Chaetodontidae")), 
+             y = N_inc, 
+             fill = Disease_general)) +
+    geom_bar(stat = "identity") +
+    theme_classic() +
+    scale_fill_manual(name = "Disease",
+                        values = c("Aspergillosis" = asp_col, "BBD" = bbd_col, "Bleaching" = blc_col, "Cyanobacterial" = cya_col, "GA" = ga_col, "General" = gen_col, "SEB" = seb_col, "Trematodiasis" = trem_col, "White" = whi_col, "BrB" = brb_col)) +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1), legend.position = "none")  +
+  ggtitle("(c) Increased disease") +
+  xlab("") +
+  ylab("Number of studies") +
+  ylim(0, 8)
+```
+
+Then for decreased:
+
+```{r}
+# decreased
+manip_neg_plt <- manip_effect %>% 
+  filter(N_dec != 0) %>% 
+  ggplot(aes(x = Corallivore_family, 
+             y = N_dec, 
+             fill = Disease_general)) +
+    geom_bar(stat = "identity") +
+    theme_classic() +
+    scale_fill_manual(name = "Disease",
+                        values = c("Aspergillosis" = asp_col, "BBD" = bbd_col, "Bleaching" = blc_col, "Cyanobacterial" = cya_col, "GA" = ga_col, "General" = gen_col, "SEB" = seb_col, "Trematodiasis" = trem_col, "White" = whi_col, "BrB" = brb_col)) +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1), legend.position = "none")  +
+  ggtitle("(d) Decreased disease") +
+  xlab("") +
+  ylab("") +
+  ylim(0, 8)
+```
+
+Then for no effect:
+
+```{r}
+# no effect
+manip_noEff_plt <- manip_effect %>% 
+  filter(N_noeff != 0) %>% 
+  ggplot(aes(x = ordered(Corallivore_family,
+                         levels = c("Chaetodontidae", "Muricidae", "Amphinomidae", "Pomacentridae")), 
+             y = N_noeff, 
+             fill = Disease_general)) +
+    geom_bar(stat = "identity") +
+    theme_classic() +
+    scale_fill_manual(name = "Disease",
+                        values = c("Aspergillosis" = asp_col, "BBD" = bbd_col, "Bleaching" = blc_col, "Cyanobacterial" = cya_col, "GA" = ga_col, "General" = gen_col, "SEB" = seb_col, "Trematodiasis" = trem_col, "White" = whi_col, "BrB" = brb_col)) +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1), legend.position = "none")  +
+  ggtitle("(e) No effect") +
+  xlab("") +
+  ylab("") +
+  ylim(0, 8)
+```
+
+# get one legend for them all
+
+```{r}
+# plot something with all of the colors (this is very sloppily done)
+legend_plt <- corr_effect %>% 
+  as.data.frame() %>% 
+  add_row("Corallivore_family" = "Test", "Disease_general" = "BrB", "N_pos" = 8, "N_neg" = 8) %>% 
+  ggplot(aes(x = Corallivore_family, 
+             y = N_pos, 
+             fill = Disease_general)) +
+    geom_bar(stat = "identity") +
+    theme_classic() +
+    scale_fill_manual(name = "Disease",
+                        values = c("Aspergillosis" = asp_col, "BBD" = bbd_col, "Bleaching" = blc_col, "Cyanobacterial" = cya_col, "GA" = ga_col, "General" = gen_col, "SEB" = seb_col, "Trematodiasis" = trem_col, "White" = whi_col, "BrB" = brb_col)) +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1))  +
+  xlab("") +
+  ylab("Number of studies") +
+  ylim(0, 8)
+
+# extract legend
+# used code from: https://github.com/hadley/ggplot2/wiki/Share-a-legend-between-two-ggplot2-graphs
+g_legend<-function(a.gplot){
+  tmp <- ggplot_gtable(ggplot_build(a.gplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)}
+
+mylegend <- g_legend(legend_plt)
+```
+
+# Combine figures
+
+```{r}
+# pdf("Fig_2.pdf", height = 7.5, width = 11)
+
+(corr_pos_plt + corr_neg_plt + mylegend) /
+(manip_pos_plt + manip_neg_plt + manip_noEff_plt) & theme(text = element_text(size = 18), plot.title = element_text(size = 18))        
+
+
+# dev.off()
+```
+
+
+
