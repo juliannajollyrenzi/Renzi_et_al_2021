@@ -1,0 +1,20 @@
+---
+title: 'Effect size: Odds ratio'
+author: "Julianna Renzi"
+date: "4/15/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+require(tidyverse) # data manipulation and plotting
+require(here) # relative paths
+```
+
+# Calculate odds ratios
+
+Bring in the data with the subset of studies 
+
+# Plot

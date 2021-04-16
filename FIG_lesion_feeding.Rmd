@@ -1,0 +1,67 @@
+---
+title: "Feeding on lesions"
+author: "Julianna Renzi"
+date: "4/15/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+require(tidyverse) # data manipulation and plotting
+require(here) # relative paths
+require(RColorBrewer) # color palettes
+```
+
+Bring in the data that has a unique line for each corallivore-study combination (same data from Figure 2)
+
+```{r}
+corallivores <- read_csv(here("data", "Taxa_effects.csv")) %>% 
+  select(-starts_with(match = "X")) # get rid of extra columns read_csv can bring in
+```
+
+Set the color palette to match correlations/manipulation effect figure
+
+```{r}
+asp_col <- brewer.pal(n = 9, name = "Spectral")[1]
+bbd_col <- brewer.pal(n = 9, name = "Spectral")[2]
+blc_col <- brewer.pal(n = 9, name = "Spectral")[3]
+brb_col <- brewer.pal(n = 9, name = "Spectral")[4]
+cya_col <- brewer.pal(n = 9, name = "Spectral")[5]
+ga_col <- brewer.pal(n = 9, name = "Spectral")[6]
+gen_col <- brewer.pal(n = 9, name = "Spectral")[7]
+seb_col <- brewer.pal(n = 9, name = "Spectral")[8]
+trem_col <- brewer.pal(n = 9, name = "Spectral")[9]
+whi_col <- brewer.pal(n = 11, name = "Spectral")[11]
+
+```
+
+Plot which fish species have been observed to feed directly on disease lesions
+
+```{r}
+# pdf("Figure_4.pdf", height = 4.5, width = 7)
+
+corallivores %>% 
+  filter(Direct_lesion_feeding == "Y") %>% 
+  filter(Corallivore_family != "Amphinomidae") %>% # just fishes
+  group_by(Corallivore_family, Disease_general) %>% 
+  summarise(Observations = n()) %>% 
+  ggplot(aes(x = ordered(Corallivore_family, levels = c("Chaetodontidae", "Pomacentridae", "Labridae", "Scaridae", "Gobiidae", "Blenniidae", "Monacanthidae", "Acanthuridae")), y = Observations, fill = Disease_general)) +
+  geom_bar(stat = "identity") +
+    theme_classic() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(size = 18))  +
+  scale_fill_manual(name = "Disease",
+                        values = c("Aspergillosis" = asp_col, "BBD" = bbd_col, "BrB" = brb_col, "General" = gen_col, "Trematodiasis" = trem_col)) + # these values are from brewer.pal("Spectral") 
+  xlab("") +
+  ylab("Number of observations") 
+  
+# dev.off()
+
+```
+
+
+
+
