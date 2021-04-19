@@ -33,7 +33,6 @@ HAcorrection <- 0.5 # Haldane‐Anscombe correction (add 0.5 to all cells to avo
 
 # calculate the odds ratios (ORs) in gg format
 ORgg <- or_data %>% 
-  filter(!is.na(Control_n)) %>% 
   # apply correction for zero data
   mutate(Treat_response = Treat_response + HAcorrection) %>% 
   mutate(Treat_n = Treat_n + HAcorrection) %>% 
@@ -79,4 +78,6 @@ ggforestplot::forestplot(
 
 # dev.off()
 ```
+
+
 
