@@ -1,0 +1,83 @@
+---
+title: 'Effect size: Odds ratio'
+author: "Julianna Renzi"
+date: "6/5/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load packages
+require(tidyverse) # data manipulation and plotting
+require(here) # relative paths
+require(ggforestplot) # for creating forest plots
+# to install for the first time: devtools::install_github("NightingaleHealth/ggforestplot")
+```
+
+# Calculate odds ratios
+
+Bring in the data with the subset of studies 
+
+```{r}
+or_data <- read_csv(here("data", "Taxa_effectsize.csv")) %>% 
+  select(-starts_with("X")) # get rid of extra columns read_csv brings in
+```
+
+Apply the HA correction and calculate odds ratios
+
+```{r}
+HAcorrection <- 0.5 # Haldane‐Anscombe correction (add 0.5 to all cells to avoid dividing by zero)
+
+# calculate the odds ratios (ORs) in gg format
+ORgg <- or_data %>% 
+  # apply correction for zero data
+  mutate(Treat_response = Treat_response + HAcorrection) %>% 
+  mutate(Treat_n = Treat_n + HAcorrection) %>% 
+  mutate(Control_response = Control_response + HAcorrection) %>% 
+  mutate(Control_n = Control_n + HAcorrection) %>% 
+  # calculate OR
+  mutate(OR = (Treat_response*Control_n)/(Treat_n*Control_response)) %>%
+  # calculate log-odds (needed for standard error, CI's etc.)
+  mutate(lnOR = log(OR)) %>% 
+  mutate(SE = ((1/Treat_response) + (1/Treat_n)
+         + (1/Control_response) + (1/Control_n))^0.5) %>%  # this SE is that defined in Ruxton and Neuhauser 2013, pg. 13
+  mutate(CI_low = exp(lnOR - (1.96*SE))) %>%  # calculate lower Confidence interval using the Woolf method to find the ones that cross the 1 line with their 95% CIs for plotting
+  mutate(Cross1 = ifelse(CI_low > 1, 0, 1)) # zero if the 95% CI does not cross 1
+  
+```
+
+# Plot
+
+```{r}
+# re-arrange so that the names are in a reasonable order (coralivores, fishes, simulated wounding)
+ORgg <- ORgg %>% 
+  arrange(factor(Corallivore_family, levels = c("Acanthasteridae", "Amphinomidae", "Cryptochiridae", "Muricidae", "Chaetodontidae", "Pomacentridae", "Wounding")))
+
+# to save run the pdf() and dev.off() lines and a PDF of the plot will save in your working directory (wherever "here" is set to)
+# pdf("Fig_3.pdf", width = 8, height = 5)
+
+ggforestplot::forestplot(
+  df = ORgg,
+  name = Corallivore_family,
+  estimate = lnOR,
+  logodds = TRUE,
+  se = SE,
+  pvalue = Cross1, # this is just zeros and 1s for visualization
+  psignif = 0.05,
+  colour = Publication,
+  xlab = "Odds ratio",
+  # title = "Corallivore families"
+) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1), # rotate axis labels
+        axis.title.x = element_text(vjust = -1)) +
+  # then need to replace color scale to rename legend
+  scale_colour_manual(name = "Publication", values = ng_palette_d("all")(17))
+
+# dev.off()
+```
+
+
+
