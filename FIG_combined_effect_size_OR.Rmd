@@ -49,7 +49,83 @@ ORgg <- or_data %>%
   
 ```
 
-# Plot
+# Group by family
+
+```{r}
+group_ORgg <- ORgg %>% 
+  group_by(Corallivore_family) %>% 
+  summarize(Mean_ln_OR = mean(lnOR),
+            Sd_ln_OR = sd(lnOR),
+            N = n(),
+            Approx95CI_up = Mean_ln_OR + 1.96*(Sd_ln_OR/sqrt(N)),
+            Approx95CI_down = Mean_ln_OR - 1.96*(Sd_ln_OR/sqrt(N)),
+            # also for non-ln
+            Mean_OR = exp(Mean_ln_OR),
+            # need to see if this works..
+            Approx95up_noln = exp(Approx95CI_up),
+            Approx95down_noln = exp(Approx95CI_down))
+```
+
+Plot by family 
+
+```{r}
+group_ORgg %>% 
+  # get rid of NA's for plotting
+  replace_na(list(Approx95CI_up=0, Approx95CI_down=0)) %>% 
+  ggplot(aes(x = Corallivore_family, y = Mean_ln_OR)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = Approx95CI_down, ymax = Approx95CI_up), colour="black", width=.1) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  theme_classic() +
+  ylab("ln(Odds ratio)") +
+  xlab("Corallivore family") +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  # add sample size numbers
+  geom_text(aes(label = paste("n =", N), y = c(2.8, 3.5, 2, 1.9, 2.4, 0.3, 2)), cex = 2.4)
+
+```
+
+## and do it un-logged
+
+```{r}
+group_ORgg %>% 
+  # get rid of NA's for plotting
+  replace_na(list(Approx95up_noln=0, Approx95down_noln=0)) %>% 
+  ggplot(aes(x = Corallivore_family, y = Mean_OR)) +
+  geom_errorbar(aes(ymin = Approx95down_noln, ymax = Approx95up_noln), colour="black", width=.1) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  theme_classic() +
+  ylab("Odds ratio") +
+  xlab("Corallivore family") +
+  theme(axis.text.x = element_text(angle = 45, hjust=1)) +
+  # add sample size numbers
+  geom_text(aes(label = paste("n =", N), y = c(2.8, 3.5, 2, 1.9, 2.4, 0.3, 2)), cex = 2.4) +
+  geom_point(data = ORgg, aes(x = Corallivore_family, y = OR), cex = 0.9)
+```
+
+Or maybe try a boxplot?
+
+```{r}
+# pdf("/Users/juliannarenzi/Dropbox/Documents/Corallivore_disease/Coral_reefs/Odds_ratio_boxplot.pdf", width = 6, height = 3.5)
+
+ORgg %>% 
+  ggplot(aes(x = Corallivore_family, y = OR)) +
+  geom_boxplot(fill = "lightblue", color = "slategray") +
+  geom_point(color = "slategray") +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  theme_classic() +
+  ylab("Odds ratio") +
+  xlab("Corallivore family") +
+  theme(axis.text.x = element_text(angle = 35, hjust=1))
+
+# dev.off()
+```
+
+
+
+
+
+# Plot by study
 
 ```{r}
 # re-arrange so that the names are in a reasonable order (coralivores, fishes, simulated wounding)

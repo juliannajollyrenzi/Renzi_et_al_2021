@@ -114,7 +114,6 @@ meow_pub <- meow_ecos %>%
 Then plot the results
 
 ```{r}
-
 ecoreg_plt <- ggplot() +
   # color the ecoregions based on the number of studies they have
   geom_sf(data = meow_pub, aes(fill = Num_studies), color = NA, size = 0) +
@@ -138,7 +137,7 @@ Use `patchwork` to combine panels
 
 ```{r}
 # to save as pdf() run this chunk without hashtags
-# pdf("Figure_1.pdf", width = 15, height = 5)
+# pdf("figures/Figure_1.pdf", width = 15, height = 5)
 time_plt + ecoreg_plt +
    plot_annotation(tag_levels = list(c("(a)", "(b)")))
 
@@ -152,7 +151,14 @@ We quote some statistics of where studies were conducted. This code is how we go
 1. For ecoregions:
 
 ```{r}
-# get the total number of studies
+# get the total number of unique papers
+total.pubs <- time %>% 
+  select(Publication) %>% 
+  unique() %>% 
+  count() %>% 
+  as.numeric()
+
+# get the total number of studies (this is larger than the number of unique papers because some papers were conducted in multiple ecoregions)
 val <- ecoreg_sum %>% 
   summarize(Total_studies = sum(Num_studies)) %>% 
   as.numeric()
