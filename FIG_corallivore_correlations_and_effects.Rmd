@@ -73,7 +73,7 @@ corr_pos_plt <- corr_effect %>%
   ggtitle("(a) Positive correlations") +
   xlab("") +
   ylab("Number of studies") +
-  ylim(0, 8)
+  scale_y_continuous(breaks = seq(0, 10, by = 2), limits = c(0, 10))
 ```
 
 
@@ -94,7 +94,7 @@ corr_neg_plt <- corr_effect %>%
   ggtitle("(b) Negative correlations") +
   xlab("") +
   ylab("") +
-  ylim(0, 8)
+  scale_y_continuous(breaks = seq(0, 10, by = 2), limits = c(0, 10))
 ```
 
 ## Experimental studies showing corallivore-disease relationship
@@ -129,7 +129,7 @@ manip_pos_plt <-manip_effect %>%
   ggtitle("(c) Increased disease") +
   xlab("") +
   ylab("Number of studies") +
-  ylim(0, 8)
+  scale_y_continuous(breaks = seq(0, 10, by = 2), limits = c(0, 10))
 ```
 
 Then for decreased:
@@ -149,7 +149,7 @@ manip_neg_plt <- manip_effect %>%
   ggtitle("(d) Decreased disease") +
   xlab("") +
   ylab("") +
-  ylim(0, 8)
+  scale_y_continuous(breaks = seq(0, 10, by = 2), limits = c(0, 10))
 ```
 
 Then for no effect:
@@ -170,7 +170,7 @@ manip_noEff_plt <- manip_effect %>%
   ggtitle("(e) No effect") +
   xlab("") +
   ylab("") +
-  ylim(0, 8)
+  scale_y_continuous(breaks = seq(0, 10, by = 2), limits = c(0, 10))
 ```
 
 # get one legend for them all
@@ -190,7 +190,7 @@ legend_plt <- corr_effect %>%
     theme(axis.text.x = element_text(angle = 30, hjust = 1))  +
   xlab("") +
   ylab("Number of studies") +
-  ylim(0, 8)
+  scale_y_continuous(breaks = seq(0, 10, by = 2), limits = c(0, 10))
 
 # extract legend
 # used code from: https://github.com/hadley/ggplot2/wiki/Share-a-legend-between-two-ggplot2-graphs
@@ -206,7 +206,7 @@ mylegend <- g_legend(legend_plt)
 # Combine figures
 
 ```{r}
-# pdf("Fig_2.pdf", height = 7.5, width = 11)
+# pdf(here("figures/Figure_2.pdf"), height = 7.5, width = 11)
 
 (corr_pos_plt + corr_neg_plt + mylegend) /
 (manip_pos_plt + manip_neg_plt + manip_noEff_plt) & theme(text = element_text(size = 18), plot.title = element_text(size = 18))        
