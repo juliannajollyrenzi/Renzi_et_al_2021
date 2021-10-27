@@ -1,5 +1,5 @@
 ---
-title: 'Effect size: Odds ratio'
+title: 'Effect size: Risk ratio'
 author: "Julianna Renzi"
 date: "6/5/2021"
 output: html_document
@@ -15,12 +15,12 @@ require(tidyverse) # data manipulation and plotting
 require(here) # relative paths
 ```
 
-# Calculate odds ratios
+# Calculate risk ratios as a measure of effect size
 
 Bring in the data with the subset of studies 
 
 ```{r}
-or_data <- read_csv(here("data", "Taxa_effectsize.csv")) %>% 
+rr_data <- read_csv(here("data", "Taxa_effectsize.csv")) %>% 
   select(-starts_with("X")) # get rid of extra columns read_csv brings in
 ```
 
@@ -29,38 +29,51 @@ Apply the HA correction and calculate odds ratios
 ```{r}
 HAcorrection <- 0.5 # Haldane‐Anscombe correction (add 0.5 to all cells to avoid dividing by zero)
 
-# calculate the odds ratios (ORs) in gg format
-ORgg <- or_data %>% 
+# calculate the risk ratios (RRs) 
+RR <- rr_data %>% 
   # apply correction for zero data
   mutate(Treat_response = Treat_response + HAcorrection) %>% 
   mutate(Treat_n = Treat_n + HAcorrection) %>% 
   mutate(Control_response = Control_response + HAcorrection) %>% 
   mutate(Control_n = Control_n + HAcorrection) %>% 
-  # calculate OR
-  mutate(OR = (Treat_response*Control_n)/(Treat_n*Control_response)) %>%
-  # calculate log-odds (needed for standard error, CI's etc.)
-  mutate(lnOR = log(OR)) %>% 
-  mutate(SE = ((1/Treat_response) + (1/Treat_n)
-         + (1/Control_response) + (1/Control_n))^0.5) %>%  # this SE is that defined in Ruxton and Neuhauser 2013, pg. 13
-  mutate(CI_low = exp(lnOR - (1.96*SE))) %>%  # calculate lower Confidence interval using the Woolf method to find the ones that cross the 1 line with their 95% CIs for plotting
-  mutate(Cross1 = ifelse(CI_low > 1, 0, 1)) # zero if the 95% CI does not cross 1
-  
+  # calculate RR
+  mutate(RR = (Treat_response/Treat_n) / (Control_response/Control_n))
 ```
+
+Note that the risk ratio is calculated as:
+
+![Risk ratio formula](figures/Risk_ratio_formula.png)
+
+# Plot it
 
 Plot as a boxplot--to get the PDF version run the code without the hastags/pound signs.
 
 ```{r}
 # pdf(here("figures/Figure_3.pdf"), width = 6, height = 3.5)
 
-ORgg %>% 
-  ggplot(aes(x = Corallivore_family, y = OR)) +
+RR %>% 
+  ggplot(aes(x = Corallivore_family, y = RR)) +
   geom_boxplot(fill = "lightblue", color = "slategray") +
   geom_point(color = "slategray") +
   geom_hline(yintercept = 1, linetype = "dashed") +
   theme_classic() +
-  ylab("Odds ratio") +
+  ylab("Risk ratio") +
   xlab("Corallivore family") +
-  theme(axis.text.x = element_text(angle = 35, hjust=1))
+  theme(axis.text.x = element_text(angle = 35, hjust=1)) 
 
 # dev.off()
+
 ```
+
+# Get means
+
+Get means for each group to mention in the text, as suggested by Reviewer 2
+
+```{r}
+RR %>% 
+  group_by(Corallivore_family) %>% 
+  summarize(Mean_RR = mean(RR),
+            Count = n()) %>% 
+  arrange(-Mean_RR)
+```
+
