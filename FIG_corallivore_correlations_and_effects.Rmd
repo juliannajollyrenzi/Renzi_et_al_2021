@@ -103,7 +103,7 @@ Plot studies that tested whether corallivores increase/decrease/have no effect o
 
 ```{r}
 manip_effect <- corallivores %>% 
-  filter(!is.na(Experimental_effect)) %>% # only studies 
+  filter(!is.na(Experimental_effect)) %>% # only studies that involved an experiment
   filter(Disease_general != "Microbiome") %>% # don't want to use this because it's too general
   group_by(Corallivore_family, Disease_general) %>% 
   summarize(N_inc = sum(Experimental_effect == "Increased"),
@@ -115,7 +115,7 @@ Plot by increased/decreased. First by increased:
 
 ```{r}
 # increased
-manip_pos_plt <-manip_effect %>% 
+manip_pos_plt <- manip_effect %>% 
   filter(N_inc != 0) %>% 
   ggplot(aes(x = ordered(Corallivore_family, 
                          levels = c("Muricidae", "Amphinomidae", "Acanthasteridae", "Cryptochiridae", "Trinchesiidae", "Chaetodontidae")), 
@@ -130,6 +130,7 @@ manip_pos_plt <-manip_effect %>%
   xlab("") +
   ylab("Number of observations") +
   scale_y_continuous(breaks = seq(0, 10, by = 2), limits = c(0, 10))
+
 ```
 
 Then for decreased:
