@@ -49,7 +49,10 @@ corallivores %>%
   filter(Corallivore_family != "Amphinomidae") %>% # just fishes
   group_by(Corallivore_family, Disease_general) %>% 
   summarise(Observations = n()) %>% 
-  ggplot(aes(x = ordered(Corallivore_family, levels = c("Chaetodontidae", "Pomacentridae", "Labridae", "Scaridae", "Gobiidae", "Blenniidae", "Monacanthidae", "Acanthuridae")), y = Observations, fill = Disease_general)) +
+  ggplot(aes(x = ordered(Corallivore_family, 
+                         levels = c("Chaetodontidae", "Pomacentridae", "Labridae", "Scaridae", "Gobiidae", "Blenniidae", "Monacanthidae", "Acanthuridae")), 
+             y = Observations, 
+             fill = Disease_general)) +
   geom_bar(stat = "identity") +
     theme_classic() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(size = 18))  +
